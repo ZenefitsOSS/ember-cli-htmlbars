@@ -45,7 +45,7 @@ TemplateCompiler.prototype.registerPlugins = function registerPlugins() {
     for (var type in plugins) {
       for (var i = 0, l = plugins[type].length; i < l; i++) {
         this.registerPlugin(type, plugins[type][i]);
-      i}
+      }
     }
   }
 };
