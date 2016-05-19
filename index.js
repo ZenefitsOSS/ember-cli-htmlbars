@@ -45,7 +45,7 @@ TemplateCompiler.prototype.registerPlugins = function registerPlugins() {
     for (var type in plugins) {
       for (var i = 0, l = plugins[type].length; i < l; i++) {
         this.registerPlugin(type, plugins[type][i]);
-      }
+      i}
     }
   }
 };
@@ -65,9 +65,16 @@ TemplateCompiler.prototype.initializeFeatures = function initializeFeatures() {
 };
 
 TemplateCompiler.prototype.processString = function (string, relativePath) {
+  var miniTemplate = jsStringEscape(UglifyJS.minify(utils.template(this.options.templateCompiler, stripBom(string), {
+    moduleName: relativePath
+  }), {fromString: true}).code)
+  var prefixString = "Ember.TEMPLATES['" + relativePath.split('.')[0] +"'] = ";
+  var finalString = prefixString + '"' + miniTemplate +'";';
+  //console.log(finalString);
   return 'export default ' + utils.template(this.options.templateCompiler, stripBom(string), {
     moduleName: relativePath
   }) + ';';
+  //return finalString;
 };
 
 TemplateCompiler.prototype._buildOptionsForHash = function() {
