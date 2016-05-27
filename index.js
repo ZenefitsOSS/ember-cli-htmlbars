@@ -69,15 +69,18 @@ TemplateCompiler.prototype.initializeFeatures = function initializeFeatures() {
 TemplateCompiler.prototype.processString = function (string, relativePath) {
   var miniTemplate = jsStringEscape(UglifyJS.minify(utils.template(this.options.templateCompiler, stripBom(string), {
     moduleName: relativePath
-  }), {fromString: true}).code) 
-  var prefixString = "Ember.TEMPLATES['" + relativePath.split('.')[0] +"'] = ";
-  prefixString = 'export default ';
+  }), {fromString: true}).code);
+  var stringTemplate = "var aStringedTemplate = "+ '"' + miniTemplate +'";\n'
+  var evalFunction = "export default function () {return eval(aStringedTemplate);}
+
+  var finalString = prefixString + ;
+  var prefixString = 'export default ';
   var finalString = prefixString + '"' + miniTemplate +'";';
   //console.log(finalString);
   /*return 'export default ' + utils.template(this.options.templateCompiler, stripBom(string), {
     moduleName: relativePath
   }) + ';';*/
-  return finalString;
+  return stringTemplate + evalFunction;
 };
 
 TemplateCompiler.prototype._buildOptionsForHash = function() {
