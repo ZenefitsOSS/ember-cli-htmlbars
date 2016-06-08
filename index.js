@@ -6,6 +6,8 @@ var Filter = require('broccoli-persistent-filter');
 var crypto = require('crypto');
 var stringify = require('json-stable-stringify');
 var stripBom = require('strip-bom');
+var UglifyJS = require('uglify-js');
+var jsStringEscape = require('js-string-escape');
 
 function TemplateCompiler (inputTree, _options) {
   if (!(this instanceof TemplateCompiler)) {
@@ -65,9 +67,18 @@ TemplateCompiler.prototype.initializeFeatures = function initializeFeatures() {
 };
 
 TemplateCompiler.prototype.processString = function (string, relativePath) {
-  return 'export default ' + utils.template(this.options.templateCompiler, stripBom(string), {
+  var tmplCode = utils.template(this.options.templateCompiler, stripBom(string), {
     moduleName: relativePath
-  }) + ';';
+  });
+  var tmplCodeMin = UglifyJS.minify(tmplCode, {
+    fromString: true,
+    mangle: false,
+    compress: false,
+  }).code;
+  tmplCodeMin = jsStringEscape(tmplCodeMin);
+  var stringTemplate =  'export default (function() { return eval(\'' + tmplCodeMin + '\'); }());';
+
+  return stringTemplate;
 };
 
 TemplateCompiler.prototype._buildOptionsForHash = function() {
