@@ -67,18 +67,19 @@ TemplateCompiler.prototype.initializeFeatures = function initializeFeatures() {
 };
 
 TemplateCompiler.prototype.processString = function (string, relativePath) {
-  var tmplCode = utils.template(this.options.templateCompiler, stripBom(string), {
+  var templateCode = utils.template(this.options.templateCompiler, stripBom(string), {
     moduleName: relativePath
   });
-  var tmplCodeMin = UglifyJS.minify(tmplCode, {
+  if (!this.options.evalTemplates) {
+    return 'export default ' + templateCode + ';';
+  }
+  var minifiedTemplateCode = UglifyJS.minify(templateCode, {
     fromString: true,
     mangle: false,
     compress: false,
   }).code;
-  tmplCodeMin = jsStringEscape(tmplCodeMin);
-  var stringTemplate =  'export default (function() { return eval(\'' + tmplCodeMin + '\'); }());';
-
-  return stringTemplate;
+  var escapedMinifiedTemplateCode = jsStringEscape(minifiedTemplateCode);
+  return  'export default (function() { return eval(\'' + escapedMinifiedTemplateCode + '\'); }());';
 };
 
 TemplateCompiler.prototype._buildOptionsForHash = function() {

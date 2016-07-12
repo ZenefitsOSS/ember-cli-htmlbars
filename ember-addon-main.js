@@ -80,6 +80,10 @@ module.exports = {
     var projectConfig = this.projectConfig() || {};
     var EmberENV = projectConfig.EmberENV || {};
     var templateCompilerPath = this.templateCompilerPath();
+    var evalTemplates = projectConfig.environment !== 'production';
+    if (projectConfig['ember-cli-htmlbars'] && projectConfig['ember-cli-htmlbars'].hasOwnProperty('evalTemplates')) {
+      evalTemplates = projectConfig['ember-cli-htmlbars'].evalTemplates;
+    }
 
     // ensure we get a fresh templateCompilerModuleInstance per ember-addon
     // instance NOTE: this is a quick hack, and will only work as long as
@@ -98,6 +102,7 @@ module.exports = {
       EmberENV: EmberENV,
       templateCompiler: require(templateCompilerPath),
       templateCompilerPath: templateCompilerPath,
+      evalTemplates: evalTemplates,
 
       plugins: {
         ast: pluginInfo.plugins
