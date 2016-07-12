@@ -39,6 +39,19 @@ describe('templateCompilerFilter', function(){
     });
   });
 
+  it('minimizes and adds eval padding to templates when the evalTemplates flag is on', function(){
+    htmlbarsOptions.evalTemplates = true;
+    var tree = templateCompilerFilter(sourcePath, htmlbarsOptions);
+
+    builder = new broccoli.Builder(tree);
+    return builder.build().then(function(results) {
+      var actual = fs.readFileSync(results.directory + '/template.js', { encoding: 'utf8'});
+      var expected = fs.readFileSync(sourcePath + '/compiled-template-with-eval', { encoding: 'utf8'});
+
+      assert.equal(actual,expected.trim());
+    });
+  });
+
   it('ignores utf-8 byte order marks', function(){
     var tree = templateCompilerFilter(sourcePath, htmlbarsOptions);
 

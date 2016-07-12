@@ -80,6 +80,10 @@ module.exports = {
     var projectConfig = this.projectConfig() || {};
     var EmberENV = projectConfig.EmberENV || {};
     var templateCompilerPath = this.templateCompilerPath();
+    var evalTemplates = projectConfig.environment !== 'production';
+    if (projectConfig['ember-cli-htmlbars'] && projectConfig['ember-cli-htmlbars'].hasOwnProperty('evalTemplates')) {
+      evalTemplates = projectConfig['ember-cli-htmlbars'].evalTemplates;
+    }
 
     global.EmberENV = EmberENV; // Needed for eval time feature flag checks
     var htmlbarsOptions = {
@@ -87,6 +91,7 @@ module.exports = {
       EmberENV: EmberENV,
       templateCompiler: require(templateCompilerPath),
       templateCompilerPath: templateCompilerPath,
+      evalTemplates: evalTemplates,
 
       plugins: {
         ast: this.astPlugins()
